@@ -6,7 +6,7 @@ from products import Product
 
 
 class Cart:
-    def __init__(self, id: int, username: str, contents: list[Product], cost: float):
+    def _init_(self, id: int, username: str, contents: list[Product], cost: float):
         self.id = id
         self.username = username
         self.contents = contents
@@ -18,23 +18,17 @@ class Cart:
 
 def get_cart(username: str) -> list:
     cart_details = dao.get_cart(username)
-    if cart_details is None:
+    if not cart_details:
         return []
-    
     items = []
     for cart_detail in cart_details:
         contents = cart_detail['contents']
-        evaluated_contents = eval(contents)  
-        for content in evaluated_contents:
-            items.append(content)
-    
-    i2 = []
-    for i in items:
-        temp_product = products.get_product(i)
-        i2.append(temp_product)
-    return i2
-
-    
+        try:
+            product_ids = json.loads(contents)
+        except json.JSONDecodeError:
+            product_ids = []
+        items.extend(product_ids)
+    return [products.get_product(pid) for pid in items]
 
 
 def add_to_cart(username: str, product_id: int):
@@ -46,5 +40,3 @@ def remove_from_cart(username: str, product_id: int):
 
 def delete_cart(username: str):
     dao.delete_cart(username)
-
-
