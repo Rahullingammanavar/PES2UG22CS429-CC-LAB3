@@ -1,8 +1,5 @@
-from products import dao
-
-
 class Product:
-    def __init__(self, id: int, name: str, description: str, cost: float, qty: int = 0):
+    def _init_(self, id: int, name: str, description: str, cost: float, qty: int = 0):
         self.id = id
         self.name = name
         self.description = description
@@ -14,13 +11,7 @@ class Product:
 
 
 def list_products() -> list[Product]:
-    products = dao.list_products()
-    result = []
-    for product in products:
-        result.append(Product.load(product))
-    
-    return result
-
+    return [Product.load(p) for p in dao.list_products()]
 
 
 def get_product(product_id: int) -> Product:
@@ -35,5 +26,3 @@ def update_qty(product_id: int, qty: int):
     if qty < 0:
         raise ValueError('Quantity cannot be negative')
     dao.update_qty(product_id, qty)
-
-
